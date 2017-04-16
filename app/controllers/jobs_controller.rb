@@ -3,7 +3,14 @@ class JobsController < ApplicationController
   before_action :find_job_and_check_permission, only: [:edit, :update, :destroy]
 
   def index
-    @jobs = Job.where(:is_hidden=>false).recent.all
+    @jobs = case params[:order]
+            when 'by_lower_bound'
+              Job.published.order('wage_lower_bound DESC')
+            when 'by_upper_bound'
+              Job.published.order('wage_upper_bound DESC')
+            else
+              Job.published.recent
+            end
   end
 
   def show
